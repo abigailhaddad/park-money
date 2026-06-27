@@ -377,6 +377,38 @@
     }
     code { background: var(--gray-100); padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
 
+    /* ── FINDINGS ── */
+    .findings-inner { max-width: var(--max-w); margin: 0 auto; padding: 56px 24px; }
+    .findings-inner h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 10px; }
+    .findings-inner > .intro { font-size: 1.05rem; color: var(--gray-600); max-width: 640px; margin-bottom: 40px; line-height: 1.65; }
+    .finding-card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 28px 30px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-left: 5px solid var(--gray-200);
+    }
+    .finding-card.red   { border-left-color: var(--red); }
+    .finding-card.amber { border-left-color: var(--amber); }
+    .finding-card.blue  { border-left-color: var(--blue); }
+    .finding-tag {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+    .finding-tag.red   { color: var(--red); }
+    .finding-tag.amber { color: var(--amber); }
+    .finding-tag.blue  { color: var(--blue); }
+    .finding-card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--gray-800); }
+    .finding-card p  { font-size: 0.93rem; color: var(--gray-600); line-height: 1.65; margin-bottom: 0; }
+    .finding-card p + p { margin-top: 10px; }
+    .finding-card .finding-stat {
+      font-size: 1.65rem; font-weight: 800; margin: 14px 0 6px;
+    }
+    .finding-stat.red   { color: var(--red); }
+    .finding-stat.amber { color: var(--amber); }
+    .finding-stat.blue  { color: var(--blue); }
+
     /* ── FOOTER ── */
     footer {
       background: #060f1a;
@@ -494,6 +526,38 @@
         <p>All fountain contracts awarded under project NAMA 350892 — the NPS National Mall fountain rehabilitation program.</p>
         <div class="terra-contracts" id="terra-list"></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ PROCUREMENT FINDINGS ══════════════════════════ -->
+<section class="band-white">
+  <div class="findings-inner">
+    <div class="eyebrow">Procurement Details</div>
+    <h2>A closer look at who competed — and who didn't.</h2>
+    <p class="intro">USAspending records include each contract's competition status and justification code. For roughly 30% of the dollars awarded this fiscal year in DC, NPS either skipped competitive bidding entirely or cited a statutory exemption to avoid it.</p>
+
+    <div class="finding-card red">
+      <div class="finding-tag red">No-bid emergency · FAR 6.302-2</div>
+      <h3>The Reflecting Pool was declared an emergency.</h3>
+      <div class="finding-stat red">$15.9M awarded without competitive bidding</div>
+      <p>In April 2026, NPS awarded a $14.2 million contract to Atlantic Industrial Coatings LLC to restore the Lincoln Reflecting Pool — without soliciting competing bids. The official justification: "unusual and compelling urgency," a procurement exception reserved for genuine emergencies where delay would cause serious harm. A second no-bid contract for the same pool, $1.7 million for nano-coating work, went to a different vendor (Green Water Solutions) under the same urgency justification one week later.</p>
+      <p>The urgency exception exists so the government can move fast in a genuine crisis. Critics of the provision note it can also be invoked to steer work to a preferred vendor.</p>
+    </div>
+
+    <div class="finding-card amber">
+      <div class="finding-tag amber">1 bidder per contract · "Full and open after exclusion of sources"</div>
+      <h3>Terra Site competed — but no one else showed up.</h3>
+      <div class="finding-stat amber">7 fountain contracts · 1 offer each</div>
+      <p>NPS classified each of Terra Site's seven December fountain contracts as "full and open competition after exclusion of sources." That designation means certain vendors were excluded from the pool before solicitation — typically non-small businesses under a set-aside program. Despite the competition label, FPDS records show each contract received exactly one offer. One company applied for each of seven contracts worth a combined $55 million.</p>
+      <p>There is nothing automatically improper about a one-bid award. But the pattern — seven separate procurements, same contractor, same week, all single-bid — is notable.</p>
+    </div>
+
+    <div class="finding-card blue">
+      <div class="finding-tag blue">Executive Order 14398</div>
+      <h3>Trump's beautification order shows up across the contract record.</h3>
+      <div class="finding-stat blue">$5.4M in contracts citing EO 14398</div>
+      <p>Executive Order 14398, which Trump signed directing federal agencies to beautify public spaces and fly flags at official buildings, appears explicitly in the description of at least five NPS DC contracts: $591k for flagpole replacements at Fort Washington and the Mall, $1.2M for expanded security guard services, $90k for fountain maintenance, $72k for anti-scale fencing installation, and a $3.5M modification to a Siemens energy contract. Several were added as modifications to existing agreements rather than as new competitive solicitations.</p>
     </div>
   </div>
 </section>
@@ -644,16 +708,16 @@ const TERRA_CONTRACTS = [
 ];
 
 const VENDORS = [
-  { name: "Terra Site Constructors LLC", amount: 59379458, contracts: 9, note: "7 fountain contracts Dec 5–11, 2025" },
-  { name: "Atlantic Industrial Coatings LLC", amount: 16392777, contracts: 2, note: "Reflecting Pool restoration, Apr 2026" },
-  { name: "Custom Lawn Service, Inc.", amount: 6879596, contracts: 5, note: "Monumental core turf & Mall maintenance" },
-  { name: "Decca Environmental Solutions Inc.", amount: 4390523, contracts: 1, note: "Operations, maintenance & repairs contract" },
-  { name: "Amvet Ritz JV LLC", amount: 3633618, contracts: 1, note: "Logan Circle rehabilitation, Mar 2026" },
-  { name: "Chenega Naswik International LLC", amount: 3250491, contracts: 9, note: "Unarmed security guard services (incl. EO 14398)" },
-  { name: "Portco Inc.", amount: 2680440, contracts: 1, note: "Custodial services — EO 14398" },
-  { name: "G.M. Hill Engineering, Inc.", amount: 2460027, contracts: 1, note: "Design/build sinkhole repair, Feb 2026" },
-  { name: "Persimmon Grove LLC", amount: 2373744, contracts: 7, note: "Pool & fountain maintenance" },
-  { name: "Garden State Fireworks Inc.", amount: 2934600, contracts: 1, note: "National Mall aerial fireworks display" },
+  { name: "Terra Site Constructors LLC",     amount: 59379458, contracts: 9, note: "7 fountain contracts Dec 5–11, 2025",            competition: "1 bid each",           compClass: "warn" },
+  { name: "Atlantic Industrial Coatings LLC", amount: 16392777, contracts: 2, note: "Reflecting Pool restoration, Apr 2026",           competition: "No-bid emergency",     compClass: "bad"  },
+  { name: "Custom Lawn Service, Inc.",        amount: 6879596,  contracts: 5, note: "Monumental core turf & Mall maintenance",         competition: "Sole source",          compClass: "bad"  },
+  { name: "Decca Environmental Solutions Inc.", amount: 4390523, contracts: 1, note: "Operations, maintenance & repairs contract",     competition: "Statutory exception",  compClass: "warn" },
+  { name: "Amvet Ritz JV LLC",               amount: 3633618,  contracts: 1, note: "Logan Circle rehabilitation, Mar 2026",           competition: "Statutory exception",  compClass: "warn" },
+  { name: "Chenega Naswik International LLC", amount: 3250491,  contracts: 9, note: "Unarmed security guard services (incl. EO 14398)", competition: "Competed",           compClass: "ok"   },
+  { name: "Portco Inc.",                      amount: 2680440,  contracts: 1, note: "Custodial services — EO 14398",                   competition: "Statutory exception",  compClass: "warn" },
+  { name: "G.M. Hill Engineering, Inc.",      amount: 2460027,  contracts: 1, note: "Design/build sinkhole repair, Feb 2026",          competition: "Competed (2 bids)",    compClass: "ok"   },
+  { name: "Persimmon Grove LLC",              amount: 2373744,  contracts: 7, note: "Pool & fountain maintenance",                     competition: "Competed",             compClass: "ok"   },
+  { name: "Garden State Fireworks Inc.",      amount: 2934600,  contracts: 1, note: "National Mall aerial fireworks display",          competition: "Competed",             compClass: "ok"   },
 ];
 
 const DC_CONTRACTS = [
