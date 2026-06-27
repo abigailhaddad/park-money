@@ -23,7 +23,6 @@ Meanwhile, internal NPS records obtained by [The Atlantic](https://www.theatlant
 | [USAspending.gov API](https://api.usaspending.gov) | Contract awards, amounts, descriptions, dates |
 | [USAspending bulk archive](https://huggingface.co/datasets/abigailhaddad/usaspending-bulk-awards) | Competition status, justification codes, offer counts (queried via DuckDB) |
 | [The Atlantic, June 2026](https://www.theatlantic.com/politics/2026/06/national-parks-trump-white-house-renovations/687700/) | 92%/68% spending shift, 900+ unfunded projects (from internal NPS budget documents) |
-| [BlazingStar](https://data.blazingstaranalytics.com) | SF-132 apportionment data confirming NPS budget scale |
 
 **Contract query parameters:** awarding sub-tier agency = "National Park Service"; award types A/B/C/D (definitive contracts); place of performance = Washington, D.C.; FY2026 (Oct 1, 2025 – Jun 2026). Retrieved June 2026.
 
@@ -49,4 +48,4 @@ Or use any static file server. The only external dependencies are Chart.js and S
 
 ## Attribution
 
-Data from [USAspending.gov](https://usaspending.gov) (public domain) and [BlazingStar](https://data.blazingstaranalytics.com) (CC0). Background reporting by Michael Scherer, [The Atlantic](https://www.theatlantic.com/politics/2026/06/national-parks-trump-white-house-renovations/687700/).
+Contract data from [USAspending.gov](https://usaspending.gov) (public domain). Background reporting by Michael Scherer, [The Atlantic](https://www.theatlantic.com/politics/2026/06/national-parks-trump-white-house-renovations/687700/).
