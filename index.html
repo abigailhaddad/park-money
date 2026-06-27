@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Park Money: NPS DC Contract Tracker</title>
+  <meta name="description" content="Tracking National Park Service contracts in Washington D.C. — who got the money, when, and how much.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:     #0d2137;
+      --blue:     #1d4ed8;
+      --green:    #15803d;
+      --green-bg: #dcfce7;
+      --red:      #b91c1c;
+      --red-bg:   #fee2e2;
+      --amber:    #b45309;
+      --amber-bg: #fef3c7;
+      --gray-50:  #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --white:    #ffffff;
+      --max-w:    920px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--gray-800);
+      background: var(--gray-50);
+      line-height: 1.6;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--navy);
+      color: var(--white);
+      padding: 80px 24px 64px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5.5vw, 3.75rem);
+      font-weight: 800;
+      line-height: 1.08;
+      max-width: 820px;
+      margin: 0 auto 18px;
+    }
+    .hero h1 em { font-style: normal; color: #60a5fa; }
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: #94a3b8;
+      max-width: 640px;
+      margin: 0 auto 44px;
+    }
+    .hero-sub a { color: #60a5fa; text-decoration: none; }
+    .hero-sub a:hover { text-decoration: underline; }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .hero-stat .num.up   { color: #4ade80; }
+    .hero-stat .num.down { color: #f87171; }
+    .hero-stat .num.warn { color: #fbbf24; }
+    .hero-stat .lbl {
+      font-size: 0.82rem;
+      color: #64748b;
+      max-width: 150px;
+      line-height: 1.4;
+    }
+
+    /* ── SHARED ── */
+    .section { max-width: var(--max-w); margin: 0 auto; padding: 56px 24px; }
+    .band-white  { background: var(--white);   border-top: 1px solid var(--gray-200); }
+    .band-gray   { background: var(--gray-50); border-top: 1px solid var(--gray-200); }
+    .band-navy   { background: var(--navy); color: var(--white); padding: 56px 24px; }
+    .eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--navy);
+      margin-bottom: 14px;
+    }
+    .prose {
+      font-size: 1.02rem;
+      color: var(--gray-600);
+      max-width: 680px;
+      margin-bottom: 14px;
+    }
+
+    /* ── CLAIM SECTION (kept as-is) ── */
+    blockquote.quote {
+      font-size: 1.45rem;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--navy);
+      border-left: 5px solid var(--navy);
+      padding: 14px 22px;
+      margin: 22px 0;
+      line-height: 1.4;
+    }
+    blockquote.quote cite {
+      display: block;
+      font-size: 0.88rem;
+      font-style: normal;
+      color: var(--gray-400);
+      margin-top: 8px;
+    }
+    .reality-box {
+      background: var(--red-bg);
+      border-left: 5px solid var(--red);
+      border-radius: 0 10px 10px 0;
+      padding: 18px 22px;
+      margin-top: 20px;
+    }
+    .reality-box .rb-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+    .reality-box p { font-size: 1.02rem; color: var(--gray-800); margin: 0; }
+    .reality-box strong { color: var(--red); }
+
+    /* ── SCROLLYTELLING ── */
+    #scrolly { position: relative; background: var(--gray-100); border-top: 1px solid var(--gray-200); }
+
+    @media (min-width: 768px) {
+      #scrolly {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 100vh;
+      }
+      .sticky-fig {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        grid-column: 1;
+        grid-row: 1;
+      }
+      .scrolly-steps {
+        grid-column: 2;
+        grid-row: 1;
+        padding: 60px 40px;
+      }
+    }
+    @media (max-width: 767px) {
+      .sticky-fig {
+        position: sticky;
+        top: 0;
+        height: 45vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        background: var(--gray-100);
+        z-index: 1;
+      }
+      .scrolly-steps { padding: 24px; }
+    }
+
+    .chart-wrap { width: 100%; max-width: 520px; }
+    .chart-note { font-size: 0.72rem; color: var(--gray-400); text-align: center; margin-top: 10px; }
+
+    .step {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 28px 30px;
+      margin-bottom: 72vh;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      border-top: 5px solid var(--gray-200);
+      transition: border-top-color 0.3s;
+    }
+    .step:last-child { margin-bottom: 24px; }
+    .step.is-active { border-top-color: var(--blue); }
+    .step .step-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 8px;
+    }
+    .step h3 { font-size: 1.2rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .step .big-n {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      margin: 6px 0 10px;
+    }
+    .step .big-n.up   { color: var(--green); }
+    .step .big-n.down { color: var(--red);   }
+    .step .big-n.warn { color: var(--amber); }
+    .step p { font-size: 0.95rem; color: var(--gray-600); }
+
+    /* ── TERRA SITE SPOTLIGHT ── */
+    .spotlight {
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 28px 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .spotlight-icon {
+      font-size: 3rem;
+      line-height: 1;
+    }
+    .spotlight-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #60a5fa;
+      margin-bottom: 6px;
+    }
+    .spotlight h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; color: var(--white); }
+    .spotlight p { font-size: 0.95rem; color: #94a3b8; margin-bottom: 12px; }
+    .terra-contracts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .terra-tag {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+    }
+    .terra-tag .tdate { color: #60a5fa; font-weight: 600; font-size: 0.72rem; }
+    .terra-tag .tamt  { color: var(--white); font-weight: 700; }
+    .terra-tag .tdesc { color: #94a3b8; font-size: 0.78rem; display: block; }
+
+    /* ── VENDOR LEADERBOARD ── */
+    .vendor-list { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+    .vendor-row {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .vendor-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .vendor-name { font-weight: 700; font-size: 0.98rem; color: var(--gray-800); }
+    .vendor-amount { font-weight: 800; font-size: 1.1rem; color: var(--navy); white-space: nowrap; }
+    .vendor-meta { font-size: 0.82rem; color: var(--gray-400); margin-bottom: 8px; }
+    .vendor-bar-track {
+      height: 6px;
+      background: var(--gray-100);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .vendor-bar-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+    .vendor-bar-fill.top { background: var(--navy); }
+
+    /* ── CONTRACTS GRID ── */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0 24px;
+    }
+    .filter-btn {
+      border: 1.5px solid var(--gray-200);
+      background: var(--white);
+      color: var(--gray-600);
+      border-radius: 24px;
+      padding: 5px 14px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover  { border-color: var(--blue); color: var(--blue); }
+    .filter-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+
+    .contract-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 16px;
+    }
+    .contract-card {
+      border: 1.5px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 18px;
+      background: var(--gray-50);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .contract-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .contract-card.hidden { display: none; }
+    .cc-amount { font-size: 1.7rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+    .cc-desc   { font-size: 0.88rem; font-weight: 500; color: var(--gray-800); margin-bottom: 8px; line-height: 1.4; }
+    .cc-meta   { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 8px; }
+    .cc-tag    { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+    .tag-b { background: #e0f2fe; color: #0369a1; }
+    .tag-e { background: #fce7f3; color: #9d174d; }
+    .tag-h { background: #f3e8ff; color: #7c3aed; }
+    .tag-o { background: #f0fdf4; color: #166534; }
+
+    /* ── CUTS ── */
+    .unfunded-banner {
+      background: var(--red-bg);
+      border: 1.5px solid #fca5a5;
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 22px 0 26px;
+    }
+    .ub-num { font-size: 2.75rem; font-weight: 800; color: var(--red); flex-shrink: 0; }
+    .ub-txt { font-size: 0.98rem; color: var(--gray-800); }
+    .cut-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .cut-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px;
+      border-top: 5px solid var(--red);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .cut-amount { font-size: 1.5rem; font-weight: 800; color: var(--red); margin-bottom: 4px; }
+    .cut-name   { font-weight: 600; font-size: 0.96rem; color: var(--gray-800); margin-bottom: 4px; }
+    .cut-park   { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-400); margin-bottom: 10px; }
+    .cut-reason { font-size: 0.87rem; color: var(--gray-600); font-style: italic; }
+
+    /* ── METHODOLOGY ── */
+    .method { max-width: 700px; margin: 0 auto; padding: 56px 24px 72px; }
+    .method h2 { margin-bottom: 14px; }
+    .method p, .method li { font-size: 0.92rem; color: var(--gray-600); margin-bottom: 10px; }
+    .method ul { padding-left: 20px; margin-bottom: 10px; }
+    .method a { color: var(--blue); text-decoration: none; }
+    .method a:hover { text-decoration: underline; }
+    .method .note {
+      background: var(--amber-bg);
+      border-left: 4px solid var(--amber);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 18px 0;
+      font-size: 0.92rem;
+      color: var(--gray-800);
+    }
+    code { background: var(--gray-100); padding: 2px 6px; border-radius: 4px; font-size: 0.88em; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #060f1a;
+      color: #475569;
+      text-align: center;
+      padding: 22px;
+      font-size: 0.82rem;
+    }
+    footer a { color: #60a5fa; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════ HERO ══════════════════════════ -->
+<header class="hero">
+  <div class="hero-eyebrow">Public Contract Records · National Park Service · FY2026</div>
+  <h1>National Park Service<br>Spent <em>$276M</em> in DC<br>This Fiscal Year</h1>
+  <p class="hero-sub">
+    USAspending.gov shows NPS awarded 140 contracts in Washington D.C. in FY2026 —
+    fountains, fireworks, and renovations — as the administration redirected park money to the capital.
+    Internal budget documents obtained by
+    <a href="https://www.theatlantic.com/politics/2026/06/national-parks-trump-white-house-renovations/687700/" target="_blank">The Atlantic</a>
+    show DC spending up 92% while other parks fell 68%.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num warn">$276M</div>
+      <div class="lbl">NPS contracts in DC, FY2026 (USAspending)</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num up">$59M</div>
+      <div class="lbl">Awarded in December 2025 alone</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num down">900+</div>
+      <div class="lbl">Park projects expected to be funded this year that weren't</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════ THE CLAIM ══════════════════════════ -->
+<section class="band-white">
+  <div class="section">
+    <div class="eyebrow">The Claim</div>
+    <h2>Trump said he'd pay for it himself.</h2>
+
+    <blockquote class="quote">
+      "Paid for by me."
+      <cite>— President Trump, when asked about the White House walkway replacement, March 2026</cite>
+    </blockquote>
+
+    <div class="reality-box">
+      <div class="rb-label">The Reality</div>
+      <p>
+        Budget documents obtained by <em>The Atlantic</em> reveal taxpayers paid
+        <strong>$689,232</strong> for the walkway alone — part of a <strong>$1.3 million project</strong>
+        covering stone and masonry repairs and new door hardware. A year earlier, taxpayers spent
+        <strong>$347,503</strong> to remove stucco from the colonnade wall, clearing the way for
+        Trump to affix gold frames and plaques mocking his predecessors. Public contracting records
+        corroborate both the scale and character of the spending.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TIMELINE SCROLLYTELLING ══════════════════════════ -->
+<section id="scrolly">
+  <figure class="sticky-fig">
+    <div class="chart-wrap">
+      <canvas id="timeline-chart"></canvas>
+      <p class="chart-note">
+        NPS contracts awarded in Washington D.C. by month, FY2026.
+        Source: USAspending.gov public API, June 2026.
+      </p>
+    </div>
+  </figure>
+
+  <div class="scrolly-steps">
+    <div class="step" data-step="0">
+      <div class="step-eyebrow">October – November 2025</div>
+      <h3>FY2026 started quietly in D.C.</h3>
+      <div class="big-n warn">$222K</div>
+      <p>
+        The fiscal year opened with just $222,384 in new NPS contracts for Washington D.C. —
+        routine fountain component replacements on the National Mall.
+      </p>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="step-eyebrow">December 2025</div>
+      <h3>Then $59 million hit in one month.</h3>
+      <div class="big-n up">$59.2M</div>
+      <p>
+        A single contractor, Terra Site Constructors LLC, received seven fountain rehabilitation
+        contracts totaling <strong>$55.2M</strong> between December 5 and 11.
+        Three contracts were awarded on the same day: December 11th.
+      </p>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="step-eyebrow">March – April 2026</div>
+      <h3>A second wave followed in spring.</h3>
+      <div class="big-n warn">$37M</div>
+      <p>
+        March brought $16.7M more — Logan Circle rehabilitation, turf maintenance, sinkhole repairs.
+        April added $20.3M including a <strong>$14.7M contract</strong> to Atlantic Industrial
+        Coatings to restore the Lincoln Reflecting Pool.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ TERRA SITE SPOTLIGHT ══════════════════════════ -->
+<section class="band-white">
+  <div class="section">
+    <div class="eyebrow">Top Contractor</div>
+    <h2>One company, seven fountains, seven days.</h2>
+    <p class="prose">
+      Terra Site Constructors LLC received $59.4M in NPS contracts in Washington D.C. across
+      FY2026 — nearly all of it in a seven-day window in December 2025. Seven separate fountain
+      rehabilitation contracts were issued under project NAMA 350892 (National Mall fountain program).
+    </p>
+
+    <div class="spotlight">
+      <div class="spotlight-icon">⛲</div>
+      <div>
+        <div class="spotlight-label">Terra Site Constructors LLC · FY2026 DC Contracts</div>
+        <h3>$59.4M total · 9 contracts</h3>
+        <p>All fountain contracts awarded under project NAMA 350892 — the NPS National Mall fountain rehabilitation program.</p>
+        <div class="terra-contracts" id="terra-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ VENDOR LEADERBOARD ══════════════════════════ -->
+<section class="band-gray">
+  <div class="section">
+    <div class="eyebrow">FY2026 New DC Awards</div>
+    <h2>Who got the money</h2>
+    <p class="prose">
+      Contractors receiving new NPS awards in Washington D.C. since October 1, 2025.
+      Ranked by total obligated amount.
+    </p>
+    <div class="vendor-list" id="vendor-list"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ CONTRACT GALLERY ══════════════════════════ -->
+<section class="band-white">
+  <div class="section" style="max-width:1040px">
+    <div class="eyebrow">All FY2026 DC Contracts — Detail View</div>
+    <h2>Every project, with vendor and date</h2>
+    <p class="prose">
+      NPS contracts with a Washington D.C. place of performance in FY2026, sorted by amount.
+      Data from USAspending.gov.
+    </p>
+
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="b">Beautification</button>
+      <button class="filter-btn" data-filter="e">Events</button>
+      <button class="filter-btn" data-filter="h">Historic Preservation</button>
+      <button class="filter-btn" data-filter="o">Operations</button>
+    </div>
+
+    <div class="contract-grid" id="contract-grid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ WHAT PARKS LOST ══════════════════════════ -->
+<section class="band-gray">
+  <div class="section">
+    <div class="eyebrow">The Other Side</div>
+    <h2>What parks gave up</h2>
+    <p class="prose">
+      Internal Park Service records, obtained by <em>The Atlantic</em>, document 900+ projects
+      that were expected to receive funding in FY2026 but didn't. Three examples:
+    </p>
+
+    <div class="unfunded-banner">
+      <div class="ub-num">900+</div>
+      <div class="ub-txt">
+        NPS projects that were expected to be funded in FY2026 and weren't — including safety
+        repairs, youth programs, and accessibility upgrades.
+      </div>
+    </div>
+
+    <div class="cut-grid" id="cut-grid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ METHODOLOGY ══════════════════════════ -->
+<section class="band-white">
+  <div class="method">
+    <div class="eyebrow">About This Data</div>
+    <h2>Methodology</h2>
+
+    <div class="note">
+      <strong>What this site measures:</strong> Contracts awarded by the National Park Service
+      with a Washington D.C. place of performance, pulled from the public USAspending.gov API.
+      This is not the same as total NPS project spending in D.C. — which would also include
+      grants, intra-agency transfers, and revolving fund expenditures not captured in public
+      contract records.
+    </div>
+
+    <p>
+      <strong>Contract data:</strong> Retrieved from
+      <a href="https://api.usaspending.gov" target="_blank">api.usaspending.gov</a>
+      using the <code>/api/v2/search/spending_by_award/</code> endpoint. Filters: awarding
+      sub-tier agency = "National Park Service"; award types A, B, C, D (contracts); place
+      of performance = Washington, D.C.; FY2026 (Oct 1 2025 – Jun 2026). Data retrieved June 2026.
+    </p>
+
+    <p>
+      <strong>Background reporting:</strong> The 92%/68% spending shift and the 900+ unfunded
+      projects come from
+      <a href="https://www.theatlantic.com/politics/2026/06/national-parks-trump-white-house-renovations/687700/" target="_blank">
+        Michael Scherer's June 2026 investigation in <em>The Atlantic</em>
+      </a>,
+      based on internal NPS budget documents. Those figures reflect total project spending from
+      NPS's internal systems, not just public contract data.
+    </p>
+
+    <p>
+      <strong>Budget data:</strong> NPS appropriation data reviewed via
+      <a href="https://data.blazingstaranalytics.com" target="_blank">BlazingStar</a>'s
+      public SF-132 apportionment mirror. The FY2026 "Operation of the National Park System"
+      account (TAFS 014-2026-2026-1036) shows $2.6B in total budgetary resources as of
+      April 2026, per P.L. 119-74.
+    </p>
+
+    <p>
+      <strong>Contract amounts</strong> reflect total obligated value at time of query.
+      Multi-year contracts (e.g., Consigli's Lincoln Memorial rehabilitation, started Dec 2022)
+      appear in FY2026 results when they had activity in the period; their amounts include
+      prior-year obligations. The timeline and vendor sections focus on contracts with a
+      start date in FY2026 (Oct 1, 2025 or later).
+    </p>
+
+    <p>Questions or corrections? <a href="mailto:abigail.haddad@gmail.com">Contact us.</a></p>
+  </div>
+</section>
+
+<footer>
+  Data from <a href="https://api.usaspending.gov">USAspending.gov</a> &
+  <a href="https://data.blazingstaranalytics.com">BlazingStar</a> ·
+  Background reporting by <a href="https://www.theatlantic.com/politics/2026/06/national-parks-trump-white-house-renovations/687700/">The Atlantic</a> ·
+  Built with public data · June 2026
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+<script>
+
+/* ══════ DATA ══════ */
+
+const MONTHLY = [
+  { label: "Nov '25", amount: 222384,    highlight: false },
+  { label: "Dec '25", amount: 59165203,  highlight: true  },
+  { label: "Jan '26", amount: 449165,    highlight: false },
+  { label: "Feb '26", amount: 4400290,   highlight: false },
+  { label: "Mar '26", amount: 16697645,  highlight: false },
+  { label: "Apr '26", amount: 20325735,  highlight: false },
+  { label: "May '26", amount: 1626735,   highlight: false },
+  { label: "Jun '26", amount: 2700196,   highlight: false },
+];
+
+const TERRA_CONTRACTS = [
+  { date: "Dec 5",  amount: 11788000, desc: "Columbus Circle Fountain" },
+  { date: "Dec 10", amount: 4866833,  desc: "John Marshall Park Fountain" },
+  { date: "Dec 10", amount: 2606000,  desc: "Korean War Veterans Fountain" },
+  { date: "Dec 11", amount: 11297014, desc: "Meridian Hill Fountain" },
+  { date: "Dec 11", amount: 11022000, desc: "Rawlins Fountain" },
+  { date: "Dec 11", amount: 10507248, desc: "Freedom Plaza Beautification & Fountain" },
+  { date: "Dec 11", amount: 4131674,  desc: "WWII Memorial Fountain" },
+  { date: "Dec 11", amount: 2570000,  desc: "Gen. Sheridan Memorial Beautification" },
+  { date: "May 22", amount: 590689,   desc: "Flagpole Replacements (EO 14398)" },
+];
+
+const VENDORS = [
+  { name: "Terra Site Constructors LLC", amount: 59379458, contracts: 9, note: "7 fountain contracts Dec 5–11, 2025" },
+  { name: "Atlantic Industrial Coatings LLC", amount: 16392777, contracts: 2, note: "Reflecting Pool restoration, Apr 2026" },
+  { name: "Custom Lawn Service, Inc.", amount: 6879596, contracts: 5, note: "Monumental core turf & Mall maintenance" },
+  { name: "Decca Environmental Solutions Inc.", amount: 4390523, contracts: 1, note: "Operations, maintenance & repairs contract" },
+  { name: "Amvet Ritz JV LLC", amount: 3633618, contracts: 1, note: "Logan Circle rehabilitation, Mar 2026" },
+  { name: "Chenega Naswik International LLC", amount: 3250491, contracts: 9, note: "Unarmed security guard services (incl. EO 14398)" },
+  { name: "Portco Inc.", amount: 2680440, contracts: 1, note: "Custodial services — EO 14398" },
+  { name: "G.M. Hill Engineering, Inc.", amount: 2460027, contracts: 1, note: "Design/build sinkhole repair, Feb 2026" },
+  { name: "Persimmon Grove LLC", amount: 2373744, contracts: 7, note: "Pool & fountain maintenance" },
+  { name: "Garden State Fireworks Inc.", amount: 2934600, contracts: 1, note: "National Mall aerial fireworks display" },
+];
+
+const DC_CONTRACTS = [
+  { desc: "Lincoln Memorial Rehabilitation", amount: 57343725, tag: "h", label: "Historic Preservation", vendor: "Consigli Construction Co.", date: "Dec 2022 (ongoing)" },
+  { desc: "National Capital Region Energy Savings Contract", amount: 42410734, tag: "o", label: "Operations", vendor: "Siemens Government Technologies", date: "Sep 2014 (ongoing)" },
+  { desc: "Reflecting Pool Restoration", amount: 14652521, tag: "b", label: "Beautification", vendor: "Atlantic Industrial Coatings LLC", date: "Apr 3, 2026" },
+  { desc: "Custodial Contract (National Mall)", amount: 12554398, tag: "o", label: "Operations", vendor: "Portco Inc.", date: "May 2021 (ongoing)" },
+  { desc: "Jefferson Memorial Lower Level Rehabilitation", amount: 12509430, tag: "h", label: "Historic Preservation", vendor: "Grunley Construction Co.", date: "Sep 2021 (ongoing)" },
+  { desc: "Columbus Circle Fountain Rehabilitation", amount: 11788000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 5, 2025" },
+  { desc: "Meridian Hill Fountain Rehabilitation", amount: 11297014, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
+  { desc: "Rawlins Fountain Rehabilitation", amount: 11022000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
+  { desc: "Freedom Plaza Beautification & Fountain", amount: 10507248, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
+  { desc: "Carter Woodson Home & Properties Restoration", amount: 7916187, tag: "h", label: "Historic Preservation", vendor: "Magna JV", date: "Sep 2021 (ongoing)" },
+  { desc: "Korean War Veterans Memorial Fountain", amount: 4866833, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 10, 2025" },
+  { desc: "Operations, Maintenance & Repairs Contract", amount: 4390523, tag: "o", label: "Operations", vendor: "Decca Environmental Solutions", date: "Mar 13, 2026" },
+  { desc: "WWII Memorial Fountain Rehabilitation", amount: 4131674, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
+  { desc: "Custodial Services (EO 14398)", amount: 2680440, tag: "o", label: "Operations", vendor: "Portco Inc.", date: "Sep 30, 2026" },
+  { desc: "Logan Circle and Site Features Rehabilitation", amount: 3633618, tag: "b", label: "Beautification", vendor: "Amvet Ritz JV LLC", date: "Mar 18, 2026" },
+  { desc: "National Mall Aerial Fireworks Display", amount: 2934600, tag: "e", label: "Events", vendor: "Garden State Fireworks Inc.", date: "Jun 2021 (ongoing)" },
+  { desc: "Korean War Veterans Fountain (2nd contract)", amount: 2606000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 10, 2025" },
+  { desc: "Monumental Core Turf Maintenance", amount: 2600270, tag: "o", label: "Operations", vendor: "Custom Lawn Service, Inc.", date: "Mar 20, 2026" },
+  { desc: "Gen. Sheridan Memorial Beautification", amount: 2570000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
+  { desc: "Reflecting Pool Nano Bubble Treatment", amount: 1740256, tag: "b", label: "Beautification", vendor: "Green Water Solutions, LLC", date: "Apr 13, 2026" },
+  { desc: "Mall Turf Maintenance", amount: 1698942, tag: "o", label: "Operations", vendor: "Custom Lawn Service, Inc.", date: "Mar 20, 2026" },
+  { desc: "Sinkhole Repair Design/Build", amount: 2460027, tag: "o", label: "Operations", vendor: "G.M. Hill Engineering, Inc.", date: "Feb 5, 2026" },
+  { desc: "Fourth of July Support (EO 14398 / F250)", amount: 684723, tag: "e", label: "Events", vendor: "Effort, LLC", date: "Jun 25, 2026" },
+];
+
+const CUT_PROJECTS = [
+  { name: "Free Bus System Operations", amount: 3000000, park: "Acadia National Park, Maine", reason: "Eliminated funding for the park's popular free visitor bus service" },
+  { name: "Center for Resources Roof Replacement", amount: 1500000, park: "Yellowstone National Park", reason: "Needed to halt pest invasions and water leaks" },
+  { name: "Cliff-Edge Guardrail Replacement", amount: 424000, park: "Black Canyon of the Gunnison, CO", reason: 'Needed to address a "significant safety hazard for visitors"' },
+  { name: "Historic Structure Repairs", amount: null, park: "Parks Nationwide", reason: "Critical repairs to historic structures delayed indefinitely" },
+  { name: "Youth Programs", amount: null, park: "Parks Nationwide", reason: "Youth programs cancelled; signage and exhibits not improved" },
+  { name: "Wheelchair-Accessible Trail Upgrades", amount: null, park: "Parks Nationwide", reason: "ADA accessibility improvements not completed" },
+];
+
+/* ══════ HELPERS ══════ */
+function fmt(n) {
+  if (n === null) return "—";
+  if (n >= 1e9) return "$" + (n / 1e9).toFixed(1) + "B";
+  if (n >= 1e6) return "$" + (n / 1e6).toFixed(1) + "M";
+  return "$" + (n / 1e3).toFixed(0) + "K";
+}
+
+/* ══════ TIMELINE CHART ══════ */
+let chart;
+const VISIBLE_MONTHS = 1; // start showing just Nov (Dec revealed on scroll)
+
+function initChart() {
+  const ctx = document.getElementById("timeline-chart").getContext("2d");
+  const colors = MONTHLY.map(m => m.highlight ? "#15803d" : "#3b82f6");
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: MONTHLY.map(m => m.label),
+      datasets: [{
+        label: "NPS DC contract awards",
+        data: MONTHLY.map((m, i) => i < VISIBLE_MONTHS ? m.amount : 0),
+        backgroundColor: colors,
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      animation: { duration: 700, easing: "easeInOutQuart" },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => " " + fmt(ctx.parsed.y) + " awarded"
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: v => v >= 1e6 ? "$" + (v/1e6).toFixed(0) + "M" : "$" + v,
+            font: { family: "Inter", size: 10 },
+            color: "#94a3b8"
+          },
+          grid: { color: "rgba(0,0,0,0.06)" }
+        },
+        x: {
+          ticks: { font: { family: "Inter", size: 10 }, color: "#475569" },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+function setChartStep(step) {
+  if (!chart) return;
+  let show;
+  if (step === 0) show = 1;      // just Nov (quiet start)
+  else if (step === 1) show = 3; // through Dec (the spike)
+  else show = MONTHLY.length;    // full timeline
+  chart.data.datasets[0].data = MONTHLY.map((m, i) => i < show ? m.amount : 0);
+  chart.update();
+}
+
+/* ══════ TERRA SITE LIST ══════ */
+function renderTerra() {
+  const el = document.getElementById("terra-list");
+  TERRA_CONTRACTS.forEach(c => {
+    const tag = document.createElement("div");
+    tag.className = "terra-tag";
+    tag.innerHTML = `<span class="tdate">2025 ${c.date}</span> <span class="tamt">${fmt(c.amount)}</span><span class="tdesc">${c.desc}</span>`;
+    el.appendChild(tag);
+  });
+}
+
+/* ══════ VENDOR LEADERBOARD ══════ */
+function renderVendors() {
+  const el = document.getElementById("vendor-list");
+  const max = VENDORS[0].amount;
+  VENDORS.forEach((v, i) => {
+    const pct = Math.round((v.amount / max) * 100);
+    const row = document.createElement("div");
+    row.className = "vendor-row";
+    row.innerHTML = `
+      <div class="vendor-top">
+        <span class="vendor-name">${i + 1}. ${v.name}</span>
+        <span class="vendor-amount">${fmt(v.amount)}</span>
+      </div>
+      <div class="vendor-meta">${v.contracts} contract${v.contracts > 1 ? "s" : ""} · ${v.note}</div>
+      <div class="vendor-bar-track"><div class="vendor-bar-fill${i === 0 ? " top" : ""}" style="width:${pct}%"></div></div>
+    `;
+    el.appendChild(row);
+  });
+}
+
+/* ══════ CONTRACT GRID ══════ */
+function renderContracts() {
+  const grid = document.getElementById("contract-grid");
+  DC_CONTRACTS.forEach(c => {
+    const el = document.createElement("div");
+    el.className = "contract-card";
+    el.dataset.tag = c.tag;
+    el.innerHTML = `
+      <div class="cc-amount">${fmt(c.amount)}</div>
+      <div class="cc-desc">${c.desc}</div>
+      <div class="cc-meta">${c.vendor} · ${c.date}</div>
+      <span class="cc-tag tag-${c.tag}">${c.label}</span>
+    `;
+    grid.appendChild(el);
+  });
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const f = btn.dataset.filter;
+      document.querySelectorAll(".contract-card").forEach(card => {
+        card.classList.toggle("hidden", f !== "all" && card.dataset.tag !== f);
+      });
+    });
+  });
+}
+
+/* ══════ CUTS ══════ */
+function renderCuts() {
+  const grid = document.getElementById("cut-grid");
+  CUT_PROJECTS.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "cut-card";
+    el.innerHTML = `
+      <div class="cut-amount">${fmt(p.amount)}</div>
+      <div class="cut-name">${p.name}</div>
+      <div class="cut-park">${p.park}</div>
+      <div class="cut-reason">${p.reason}</div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+/* ══════ SCROLLAMA ══════ */
+function initScrollama() {
+  const scroller = scrollama();
+  scroller
+    .setup({ step: ".step", offset: 0.55 })
+    .onStepEnter(({ index, element }) => {
+      document.querySelectorAll(".step").forEach(s => s.classList.remove("is-active"));
+      element.classList.add("is-active");
+      setChartStep(index);
+    });
+  window.addEventListener("resize", scroller.resize);
+}
+
+/* ══════ INIT ══════ */
+document.addEventListener("DOMContentLoaded", () => {
+  initChart();
+  renderTerra();
+  renderVendors();
+  renderContracts();
+  renderCuts();
+  initScrollama();
+});
+</script>
+</body>
+</html>
