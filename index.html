@@ -284,50 +284,55 @@
     }
     .vendor-bar-fill.top { background: var(--navy); }
 
-    /* ── CONTRACTS GRID ── */
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 20px 0 24px;
-    }
-    .filter-btn {
-      border: 1.5px solid var(--gray-200);
-      background: var(--white);
-      color: var(--gray-600);
-      border-radius: 24px;
-      padding: 5px 14px;
-      font-size: 0.83rem;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .filter-btn:hover  { border-color: var(--blue); color: var(--blue); }
-    .filter-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+    /* ── CONTRACT TIMELINE ── */
+    .tl-outer { max-width: var(--max-w); margin: 0 auto; padding: 56px 24px; }
+    .tl-outer h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 8px; }
+    .tl-outer > .prose { margin-bottom: 40px; }
 
-    .contract-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 16px;
+    .tl-period { display: grid; grid-template-columns: 110px 1fr; gap: 0 24px; margin-bottom: 8px; }
+    @media (max-width: 580px) { .tl-period { grid-template-columns: 1fr; } }
+
+    .tl-month-label {
+      padding-top: 18px;
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--gray-400);
+      text-align: right;
     }
-    .contract-card {
-      border: 1.5px solid var(--gray-200);
-      border-radius: 12px;
-      padding: 18px;
-      background: var(--gray-50);
-      transition: transform 0.15s, box-shadow 0.15s;
+    .tl-period.spotlight .tl-month-label { color: var(--green); }
+    .tl-period.alert     .tl-month-label { color: var(--red); }
+
+    .tl-events { border-left: 2px solid var(--gray-200); padding: 14px 0 14px 24px; }
+    .tl-period.spotlight .tl-events { border-left-color: var(--green); }
+    .tl-period.alert     .tl-events { border-left-color: var(--red); }
+
+    .tl-period-callout {
+      font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; margin-bottom: 8px; padding: 3px 10px;
+      display: inline-block; border-radius: 4px;
     }
-    .contract-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
-    .contract-card.hidden { display: none; }
-    .cc-amount { font-size: 1.7rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
-    .cc-desc   { font-size: 0.88rem; font-weight: 500; color: var(--gray-800); margin-bottom: 8px; line-height: 1.4; }
-    .cc-meta   { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 8px; }
-    .cc-tag    { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
-    .tag-b { background: #e0f2fe; color: #0369a1; }
-    .tag-e { background: #fce7f3; color: #9d174d; }
-    .tag-h { background: #f3e8ff; color: #7c3aed; }
-    .tag-o { background: #f0fdf4; color: #166534; }
+    .tl-period.spotlight .tl-period-callout { background: var(--green-bg); color: var(--green); }
+    .tl-period.alert     .tl-period-callout { background: var(--red-bg);   color: var(--red); }
+
+    .tl-entry {
+      display: flex; align-items: baseline; gap: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .tl-entry:last-child { border-bottom: none; }
+    .tl-entry-date   { font-size: 0.75rem; color: var(--gray-400); white-space: nowrap; min-width: 44px; }
+    .tl-entry-amount { font-size: 0.92rem; font-weight: 700; color: var(--navy); white-space: nowrap; }
+    .tl-entry-desc   { font-size: 0.88rem; color: var(--gray-600); line-height: 1.4; }
+    .tl-entry-vendor { font-size: 0.78rem; color: var(--gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tl-entry-badge  {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 1px 7px; border-radius: 3px; white-space: nowrap; flex-shrink: 0;
+    }
+    .badge-nobid   { background: var(--red-bg);   color: var(--red); }
+    .badge-sole    { background: var(--amber-bg);  color: var(--amber); }
+    .badge-eo      { background: #ede9fe;           color: #6d28d9; }
+    .tl-period-total {
+      margin-top: 10px; font-size: 0.82rem; font-weight: 700; color: var(--gray-600);
+    }
 
     /* ── CUTS ── */
     .unfunded-banner {
@@ -575,25 +580,200 @@
   </div>
 </section>
 
-<!-- ══════════════════════════ CONTRACT GALLERY ══════════════════════════ -->
-<section class="band-white">
-  <div class="section" style="max-width:1040px">
-    <div class="eyebrow">All FY2026 DC Contracts — Detail View</div>
-    <h2>Every project, with vendor and date</h2>
+<!-- ══════════════════════════ CONTRACT TIMELINE ══════════════════════════ -->
+<section class="band-gray">
+  <div class="tl-outer">
+    <div class="eyebrow">Contract-by-Contract · FY2026</div>
+    <h2>Eight months of spending, in order.</h2>
     <p class="prose">
-      NPS contracts with a Washington D.C. place of performance in FY2026, sorted by amount.
-      Data from USAspending.gov.
+      The full contract record shows two distinct surges: a single week of fountain awards
+      in December, and a cluster of spring contracts — including the no-bid Reflecting Pool work —
+      that followed months later.
     </p>
 
-    <div class="filter-row">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="b">Beautification</button>
-      <button class="filter-btn" data-filter="e">Events</button>
-      <button class="filter-btn" data-filter="h">Historic Preservation</button>
-      <button class="filter-btn" data-filter="o">Operations</button>
+    <!-- OCT–NOV 2025 -->
+    <div class="tl-period">
+      <div class="tl-month-label">Oct – Nov<br>2025</div>
+      <div class="tl-events">
+        <div class="tl-entry">
+          <span class="tl-entry-date">Oct 28</span>
+          <span class="tl-entry-amount">$983K</span>
+          <span class="tl-entry-desc">Lincoln Memorial Rehabilitation (modification)</span>
+          <span class="tl-entry-vendor">Consigli Construction</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Nov</span>
+          <span class="tl-entry-amount">$222K</span>
+          <span class="tl-entry-desc">Custodial and maintenance (small contracts)</span>
+          <span class="tl-entry-vendor">Various</span>
+        </div>
+        <div class="tl-period-total">$1.2M total · Quiet start to the fiscal year</div>
+      </div>
     </div>
 
-    <div class="contract-grid" id="contract-grid"></div>
+    <!-- DEC 2025 SPOTLIGHT -->
+    <div class="tl-period spotlight">
+      <div class="tl-month-label">Dec<br>2025</div>
+      <div class="tl-events">
+        <div class="tl-period-callout">$59M in one month</div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 5</span>
+          <span class="tl-entry-amount">$11.8M</span>
+          <span class="tl-entry-desc">Columbus Circle Fountain Rehabilitation</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 10</span>
+          <span class="tl-entry-amount">$4.9M</span>
+          <span class="tl-entry-desc">John Marshall Park Fountain</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 10</span>
+          <span class="tl-entry-amount">$2.6M</span>
+          <span class="tl-entry-desc">Korean War Veterans Memorial Fountain</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 11</span>
+          <span class="tl-entry-amount">$11.3M</span>
+          <span class="tl-entry-desc">Meridian Hill Fountain Rehabilitation</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 11</span>
+          <span class="tl-entry-amount">$11.0M</span>
+          <span class="tl-entry-desc">Rawlins Fountain Rehabilitation</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 11</span>
+          <span class="tl-entry-amount">$10.5M</span>
+          <span class="tl-entry-desc">Freedom Plaza Beautification &amp; Fountain</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 11</span>
+          <span class="tl-entry-amount">$4.1M</span>
+          <span class="tl-entry-desc">WWII Memorial Fountain Rehabilitation</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Dec 11</span>
+          <span class="tl-entry-amount">$2.6M</span>
+          <span class="tl-entry-desc">Gen. Sheridan Memorial Beautification</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+        </div>
+        <div class="tl-period-total">$58.8M to Terra Site · All 1 bidder each</div>
+      </div>
+    </div>
+
+    <!-- JAN–FEB 2026 -->
+    <div class="tl-period">
+      <div class="tl-month-label">Jan – Feb<br>2026</div>
+      <div class="tl-events">
+        <div class="tl-entry">
+          <span class="tl-entry-date">Jan</span>
+          <span class="tl-entry-amount">$449K</span>
+          <span class="tl-entry-desc">Security guard services and small maintenance</span>
+          <span class="tl-entry-vendor">Various</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Feb 5</span>
+          <span class="tl-entry-amount">$2.5M</span>
+          <span class="tl-entry-desc">Design/Build Sinkhole Repair (2 bids)</span>
+          <span class="tl-entry-vendor">G.M. Hill Engineering</span>
+        </div>
+        <div class="tl-period-total">$2.9M total</div>
+      </div>
+    </div>
+
+    <!-- MAR 2026 -->
+    <div class="tl-period">
+      <div class="tl-month-label">Mar<br>2026</div>
+      <div class="tl-events">
+        <div class="tl-entry">
+          <span class="tl-entry-date">Mar 13</span>
+          <span class="tl-entry-amount">$4.4M</span>
+          <span class="tl-entry-desc">Operations, Maintenance &amp; Repairs Contract</span>
+          <span class="tl-entry-vendor">Decca Environmental Solutions</span>
+          <span class="tl-entry-badge badge-sole">8(a) sole source</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Mar 18</span>
+          <span class="tl-entry-amount">$3.6M</span>
+          <span class="tl-entry-desc">Logan Circle &amp; Site Features Rehabilitation</span>
+          <span class="tl-entry-vendor">Amvet Ritz JV LLC</span>
+          <span class="tl-entry-badge badge-sole">8(a) sole source</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Mar 20</span>
+          <span class="tl-entry-amount">$4.3M</span>
+          <span class="tl-entry-desc">Monumental Core Turf &amp; Mall Maintenance (3 contracts)</span>
+          <span class="tl-entry-vendor">Custom Lawn Service</span>
+          <span class="tl-entry-badge badge-sole">Sole source</span>
+        </div>
+        <div class="tl-period-total">$16.7M total</div>
+      </div>
+    </div>
+
+    <!-- APR 2026 ALERT -->
+    <div class="tl-period alert">
+      <div class="tl-month-label">Apr<br>2026</div>
+      <div class="tl-events">
+        <div class="tl-period-callout">Emergency declared</div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Apr 3</span>
+          <span class="tl-entry-amount">$14.2M</span>
+          <span class="tl-entry-desc">Lincoln Reflecting Pool Restoration</span>
+          <span class="tl-entry-vendor">Atlantic Industrial Coatings</span>
+          <span class="tl-entry-badge badge-nobid">No bid · Urgency</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Apr 13</span>
+          <span class="tl-entry-amount">$1.7M</span>
+          <span class="tl-entry-desc">Reflecting Pool Nano Bubble Treatment</span>
+          <span class="tl-entry-vendor">Green Water Solutions</span>
+          <span class="tl-entry-badge badge-nobid">No bid · Urgency</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Apr</span>
+          <span class="tl-entry-amount">$4.4M</span>
+          <span class="tl-entry-desc">Reflecting Pool Paint (second Atlantic contract)</span>
+          <span class="tl-entry-vendor">Atlantic Industrial Coatings</span>
+        </div>
+        <div class="tl-period-total">$20.3M total · Both Reflecting Pool contracts were no-bid</div>
+      </div>
+    </div>
+
+    <!-- MAY–JUN 2026 -->
+    <div class="tl-period">
+      <div class="tl-month-label">May – Jun<br>2026</div>
+      <div class="tl-events">
+        <div class="tl-entry">
+          <span class="tl-entry-date">May 22</span>
+          <span class="tl-entry-amount">$591K</span>
+          <span class="tl-entry-desc">Flagpole Replacements at Fort Washington &amp; Mall</span>
+          <span class="tl-entry-vendor">Terra Site Constructors</span>
+          <span class="tl-entry-badge badge-eo">EO 14398</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Jun</span>
+          <span class="tl-entry-amount">$3.5M</span>
+          <span class="tl-entry-desc">Energy Contract Modification (Siemens)</span>
+          <span class="tl-entry-vendor">Siemens Government Technologies</span>
+          <span class="tl-entry-badge badge-eo">EO 14398</span>
+        </div>
+        <div class="tl-entry">
+          <span class="tl-entry-date">Jun</span>
+          <span class="tl-entry-amount">$700K</span>
+          <span class="tl-entry-desc">Security, pool maintenance, event support</span>
+          <span class="tl-entry-vendor">Various</span>
+        </div>
+        <div class="tl-period-total">$4.3M total</div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -720,31 +900,6 @@ const VENDORS = [
   { name: "Garden State Fireworks Inc.",      amount: 2934600,  contracts: 1, note: "National Mall aerial fireworks display",          competition: "Competed",             compClass: "ok"   },
 ];
 
-const DC_CONTRACTS = [
-  { desc: "Lincoln Memorial Rehabilitation", amount: 57343725, tag: "h", label: "Historic Preservation", vendor: "Consigli Construction Co.", date: "Dec 2022 (ongoing)" },
-  { desc: "National Capital Region Energy Savings Contract", amount: 42410734, tag: "o", label: "Operations", vendor: "Siemens Government Technologies", date: "Sep 2014 (ongoing)" },
-  { desc: "Reflecting Pool Restoration", amount: 14652521, tag: "b", label: "Beautification", vendor: "Atlantic Industrial Coatings LLC", date: "Apr 3, 2026" },
-  { desc: "Custodial Contract (National Mall)", amount: 12554398, tag: "o", label: "Operations", vendor: "Portco Inc.", date: "May 2021 (ongoing)" },
-  { desc: "Jefferson Memorial Lower Level Rehabilitation", amount: 12509430, tag: "h", label: "Historic Preservation", vendor: "Grunley Construction Co.", date: "Sep 2021 (ongoing)" },
-  { desc: "Columbus Circle Fountain Rehabilitation", amount: 11788000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 5, 2025" },
-  { desc: "Meridian Hill Fountain Rehabilitation", amount: 11297014, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
-  { desc: "Rawlins Fountain Rehabilitation", amount: 11022000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
-  { desc: "Freedom Plaza Beautification & Fountain", amount: 10507248, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
-  { desc: "Carter Woodson Home & Properties Restoration", amount: 7916187, tag: "h", label: "Historic Preservation", vendor: "Magna JV", date: "Sep 2021 (ongoing)" },
-  { desc: "Korean War Veterans Memorial Fountain", amount: 4866833, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 10, 2025" },
-  { desc: "Operations, Maintenance & Repairs Contract", amount: 4390523, tag: "o", label: "Operations", vendor: "Decca Environmental Solutions", date: "Mar 13, 2026" },
-  { desc: "WWII Memorial Fountain Rehabilitation", amount: 4131674, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
-  { desc: "Custodial Services (EO 14398)", amount: 2680440, tag: "o", label: "Operations", vendor: "Portco Inc.", date: "Sep 30, 2026" },
-  { desc: "Logan Circle and Site Features Rehabilitation", amount: 3633618, tag: "b", label: "Beautification", vendor: "Amvet Ritz JV LLC", date: "Mar 18, 2026" },
-  { desc: "National Mall Aerial Fireworks Display", amount: 2934600, tag: "e", label: "Events", vendor: "Garden State Fireworks Inc.", date: "Jun 2021 (ongoing)" },
-  { desc: "Korean War Veterans Fountain (2nd contract)", amount: 2606000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 10, 2025" },
-  { desc: "Monumental Core Turf Maintenance", amount: 2600270, tag: "o", label: "Operations", vendor: "Custom Lawn Service, Inc.", date: "Mar 20, 2026" },
-  { desc: "Gen. Sheridan Memorial Beautification", amount: 2570000, tag: "b", label: "Beautification", vendor: "Terra Site Constructors LLC", date: "Dec 11, 2025" },
-  { desc: "Reflecting Pool Nano Bubble Treatment", amount: 1740256, tag: "b", label: "Beautification", vendor: "Green Water Solutions, LLC", date: "Apr 13, 2026" },
-  { desc: "Mall Turf Maintenance", amount: 1698942, tag: "o", label: "Operations", vendor: "Custom Lawn Service, Inc.", date: "Mar 20, 2026" },
-  { desc: "Sinkhole Repair Design/Build", amount: 2460027, tag: "o", label: "Operations", vendor: "G.M. Hill Engineering, Inc.", date: "Feb 5, 2026" },
-  { desc: "Fourth of July Support (EO 14398 / F250)", amount: 684723, tag: "e", label: "Events", vendor: "Effort, LLC", date: "Jun 25, 2026" },
-];
 
 const CUT_PROJECTS = [
   { name: "Free Bus System Operations", amount: 3000000, park: "Acadia National Park, Maine", reason: "Eliminated funding for the park's popular free visitor bus service" },
@@ -852,32 +1007,6 @@ function renderVendors() {
   });
 }
 
-/* ══════ CONTRACT GRID ══════ */
-function renderContracts() {
-  const grid = document.getElementById("contract-grid");
-  DC_CONTRACTS.forEach(c => {
-    const el = document.createElement("div");
-    el.className = "contract-card";
-    el.dataset.tag = c.tag;
-    el.innerHTML = `
-      <div class="cc-amount">${fmt(c.amount)}</div>
-      <div class="cc-desc">${c.desc}</div>
-      <div class="cc-meta">${c.vendor} · ${c.date}</div>
-      <span class="cc-tag tag-${c.tag}">${c.label}</span>
-    `;
-    grid.appendChild(el);
-  });
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const f = btn.dataset.filter;
-      document.querySelectorAll(".contract-card").forEach(card => {
-        card.classList.toggle("hidden", f !== "all" && card.dataset.tag !== f);
-      });
-    });
-  });
-}
 
 /* ══════ CUTS ══════ */
 function renderCuts() {
@@ -913,7 +1042,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initChart();
   renderTerra();
   renderVendors();
-  renderContracts();
   renderCuts();
   initScrollama();
 });
